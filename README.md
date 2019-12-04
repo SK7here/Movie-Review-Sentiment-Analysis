@@ -1,2 +1,4 @@
-# Movie-Review-Sentiment-Analysis
-Review for a movie is analysed to predict its sentiment using three different algorithms. GloVe embedding is used for vector representation of words
+# Algorithms used:<br>
+&nbsp;1.Simple Neural Network<br>
+&nbsp;2.Convolutional Neural Network<br>
+&nbsp;3.LSTM - Recurrent Neural Network<br>
