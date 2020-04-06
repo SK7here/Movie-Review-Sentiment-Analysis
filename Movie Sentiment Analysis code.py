@@ -122,7 +122,7 @@ X_test = pad_sequences(X_test, padding='post', maxlen=maxlen)
 # Creating a dictionary with words as key and corresponding embedding list loaded from "GloVe" dataset as values
 embeddings_dictionary = dict()
 glove_file = open('glove.6B.100d.txt', encoding="utf8")
-# Creating each line in GloVe dataset as a kwy-value pair
+# Creating each line in GloVe dataset as a key-value pair
 for line in glove_file:
     records = line.split()
     word = records[0]
@@ -295,7 +295,8 @@ print(reviewText)
 
 # Converting text to numeric form
     #Using the tokenizer built earlier
-#Since we have trained with a list of reviews and now we are feeding in a string, we need to apply "text_to_word_sequence" before tokenizing
+# text_to_word_sequence - converts sentence into list of words
+# text_to_sequences - substitutes words with their word indices 
 reviewText = text_to_word_sequence(reviewText)
 reviewProcessed = tokenizer.texts_to_sequences(reviewText)
 print("\nINTERGER SEQUENCE OF THE REVIEW CHOSEN IS")
