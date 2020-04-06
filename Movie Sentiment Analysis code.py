@@ -295,8 +295,8 @@ print(reviewText)
 
 # Converting text to numeric form
     #Using the tokenizer built earlier
-# text_to_word_sequence - converts sentence into list of words
-# text_to_sequences - substitutes words with their word indices 
+# text_to_word_sequence - converts a sentence into a list having list of words
+# text_to_sequences - converts a sentence into a list having list of indices of corresponding words in that sentence 
 reviewText = text_to_word_sequence(reviewText)
 reviewProcessed = tokenizer.texts_to_sequences(reviewText)
 print("\nINTERGER SEQUENCE OF THE REVIEW CHOSEN IS")
