@@ -6,7 +6,7 @@ import re                           # for regular expressions
 import nltk                         # for text manipulation
 from nltk.corpus import stopwords   # for removing stopwords in English
 import matplotlib.pyplot as plt     # To plot graphs
-import seaborn as sns               # To plot advanced graphs
+
 
 from numpy import array
 from keras.preprocessing.text import one_hot                                                # for performing one hot encoding
@@ -26,7 +26,7 @@ np.random.seed(11)      # To reproduce results
 # DATA INSPECTION
 
 # Reading dataset
-movie_reviews = pd.read_csv("IMDB Dataset.csv")
+movie_reviews = pd.read_csv("IMDB-Dataset.csv")
 # Checking for any null entries in dataset
 print("\nIs the dataset having any null entries?")
 print(movie_reviews.isnull().values.any())
@@ -75,6 +75,7 @@ def remove_tags(text):
 # Passing all the reviews into preprocess function defined earlier
     #Defining an empty list to store preprocessed text
 X = []
+# Converting our dataset from type "dataframe" to type "list"
 sentences = list(movie_reviews['review'])
 for sen in sentences:
     X.append(preprocess(sen))
@@ -97,6 +98,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random
 # DATA PREPARATION
 
 # Consider only top 5000 most frequent words
+    # Converts words into vectors holding sequence of intergers for corresponding words
 tokenizer = Tokenizer(num_words=5000)
 # Generate index for each string based on frequency (more frequent ; lesser the index value)
 tokenizer.fit_on_texts(X_train)
@@ -122,7 +124,7 @@ X_test = pad_sequences(X_test, padding='post', maxlen=maxlen)
 # Creating a dictionary with words as key and corresponding embedding list loaded from "GloVe" dataset as values
 embeddings_dictionary = dict()
 glove_file = open('glove.6B.100d.txt', encoding="utf8")
-# Creating each line in GloVe dataset as a key-value pair
+# Creating each line in GloVe dataset as a kwy-value pair
 for line in glove_file:
     records = line.split()
     word = records[0]
@@ -137,6 +139,7 @@ embedding_matrix = np.zeros((vocab_size, 100))
 # Getting vector representation (from embedding dictionary) of each word in word_index
 for word, index in tokenizer.word_index.items():
     embedding_vector = embeddings_dictionary.get(word)
+    #If word is not available in GloVE embedding text file, that word will be skipped
     if embedding_vector is not None:
         embedding_matrix[index] = embedding_vector
 
@@ -150,11 +153,14 @@ dnn_model = Sequential()
 embedding_layer = Embedding(vocab_size, 100, weights=[embedding_matrix], input_length=maxlen , trainable=False)
 dnn_model.add(embedding_layer)
 # Flattening the embedding the layer
+    # layer of dimension (5, 3) becomes (1, 15)
 dnn_model.add(Flatten())
 # Adding Dense layer with one dimension output space
+    # Dense is made at final layer - Fully connected layer
 dnn_model.add(Dense(1, activation='sigmoid'))
 
 # Compiling the model
+    #Optimizer used for faster convergence of model training
 dnn_model.compile(optimizer='nadam', loss='binary_crossentropy', metrics=['acc'])
 # Printing the model summary
 print("\nSIMPLE DEEP NEURAL NETWORK MODEL")
@@ -173,17 +179,17 @@ print("Test Accuracy:", dnn_score[1])
 plt.title('Neural network model accuracy')
 plt.ylabel('Accuracy')
 plt.xlabel('Number of epoch')
-plt.legend(['train','test'], loc='upper left')
-plt.plot(dnn_history.history['acc'])
-plt.plot(dnn_history.history['val_acc'])
+plt.plot(dnn_history.history['acc'], label = 'Train')
+plt.plot(dnn_history.history['val_acc'], label = 'Valid')
+plt.legend(loc='best')
 plt.show()
     # Loss graph
 plt.title('Neural network model loss')
 plt.ylabel('loss')
 plt.xlabel('epoch')
-plt.legend(['train','test'], loc='upper left')
-plt.plot(dnn_history.history['loss'])
-plt.plot(dnn_history.history['val_loss'])
+plt.plot(dnn_history.history['loss'], label = 'Train')
+plt.plot(dnn_history.history['val_loss'], label = 'Valid')
+plt.legend(loc='best')
 plt.show()
 
 ###################################################################################################################################################################
@@ -223,17 +229,17 @@ print("Test Accuracy:", cnn_score[1])
 plt.title('CNN model accuracy')
 plt.ylabel('Accuracy')
 plt.xlabel('Number of epoch')
-plt.legend(['train','test'], loc='upper left')
-plt.plot(cnn_history.history['acc'])
-plt.plot(cnn_history.history['val_acc'])
+plt.plot(cnn_history.history['acc'], label = 'Train')
+plt.plot(cnn_history.history['val_acc'], label = 'Valid')
+plt.legend(loc='best')
 plt.show()
     # Loss graph
 plt.title('CNN model loss')
 plt.ylabel('loss')
 plt.xlabel('epoch')
-plt.legend(['train','test'], loc='upper left')
-plt.plot(cnn_history.history['loss'])
-plt.plot(cnn_history.history['val_loss'])
+plt.plot(cnn_history.history['loss'], label = 'Train')
+plt.plot(cnn_history.history['val_loss'], label = 'Valid')
+plt.legend(loc='best')
 plt.show()
 
 ###################################################################################################################################################################
@@ -266,23 +272,44 @@ print("Test Accuracy:", rnn_score[1])
 
 # Plotting graph for model built
     # Accuracy graph
-plt.title('LSTM RNN model accuracy')
+plt.title('LSTM model accuracy')
 plt.ylabel('Accuracy')
 plt.xlabel('Number of epoch')
-plt.legend(['train','test'], loc='upper left')
-plt.plot(rnn_history.history['acc'])
-plt.plot(rnn_history.history['val_acc'])
+plt.plot(rnn_history.history['acc'], label = 'Train')
+plt.plot(rnn_history.history['val_acc'], label = 'Valid')
+plt.legend(loc='best')
 plt.show()
     # Loss graph
-plt.title('LSTM RNN model loss')
+plt.title('LSTM model loss')
 plt.ylabel('loss')
 plt.xlabel('epoch')
-plt.legend(['train','test'], loc='upper left')
-plt.plot(cnn_history.history['loss'])
-plt.plot(cnn_history.history['val_loss'])
+plt.plot(rnn_history.history['loss'], label = 'Train')
+plt.plot(rnn_history.history['val_loss'], label = 'Valid')
+plt.legend(loc='best')
 plt.show()
 
 ###################################################################################################################################################################
+
+# Final Results
+print("\nDeep Neural Network")
+print("Traning Accuracy : {}" .format(dnn_history.history['acc']))
+print("Validation Accuracy : {}" .format(dnn_history.history['val_acc']))
+print("\nTraning Loss : {}" .format(dnn_history.history['loss']))
+print("Validation Loss : {}" .format(dnn_history.history['val_loss']))
+
+print("\n\n\nConvolution Neural Network")
+print("Traning Accuracy : {}" .format(cnn_history.history['acc']))
+print("Validation Accuracy : {}" .format(cnn_history.history['val_acc']))
+print("\nTraning Loss : {}" .format(cnn_history.history['loss']))
+print("Validation Loss : {}" .format(cnn_history.history['val_loss']))
+
+print("\n\n\nLSTM")
+print("Traning Accuracy : {}" .format(rnn_history.history['acc']))
+print("Validation Accuracy : {}" .format(rnn_history.history['val_acc']))
+print("\nTraning Loss : {}" .format(rnn_history.history['loss']))
+print("Validation Loss : {}" .format(rnn_history.history['val_loss']))
+
+###################################################################################################################################################################      
 
 # Making prediction on any single review using three models that we have built
 
@@ -295,8 +322,7 @@ print(reviewText)
 
 # Converting text to numeric form
     #Using the tokenizer built earlier
-# text_to_word_sequence - converts a sentence into a list having list of words
-# text_to_sequences - converts a sentence into a list having list of indices of corresponding words in that sentence 
+#Since we have trained with a list of reviews and now we are feeding in a string, we need to apply "text_to_word_sequence" before tokenizing
 reviewText = text_to_word_sequence(reviewText)
 reviewProcessed = tokenizer.texts_to_sequences(reviewText)
 print("\nINTERGER SEQUENCE OF THE REVIEW CHOSEN IS")
@@ -320,8 +346,3 @@ print("\nPredition by Convolution Neural network model is")
 print(cnn_model.predict(reviewSequence))
 print("\nPredition by LSTM Recurrent Neural network model is")
 print(rnn_model.predict(reviewSequence))
-
-
-
-
-
